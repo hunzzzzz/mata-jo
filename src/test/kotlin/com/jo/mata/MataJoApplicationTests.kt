@@ -17,7 +17,7 @@ class MataJoApplicationTests {
     lateinit var mockMvc: MockMvc
 
     @Test
-    @DisplayName("")
+    @DisplayName("루트 경로에 접근하면 Welcome Message를 출력한다.")
     fun home() {
         mockMvc.perform(MockMvcRequestBuilders.get("/"))
             .andExpect(MockMvcResultMatchers.status().isOk)

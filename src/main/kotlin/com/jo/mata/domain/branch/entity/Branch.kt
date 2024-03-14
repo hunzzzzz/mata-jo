@@ -1,4 +1,4 @@
-package com.jo.mata.domain.branch
+package com.jo.mata.domain.branch.entity
 
 import com.jo.mata.domain.user.entity.User
 import jakarta.persistence.Column

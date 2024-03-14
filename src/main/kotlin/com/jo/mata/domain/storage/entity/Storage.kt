@@ -1,6 +1,6 @@
 package com.jo.mata.domain.storage.entity
 
-import com.jo.mata.domain.branch.Branch
+import com.jo.mata.domain.branch.entity.Branch
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
