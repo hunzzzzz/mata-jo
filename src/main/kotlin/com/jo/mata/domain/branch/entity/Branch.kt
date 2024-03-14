@@ -11,11 +11,14 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "branches")
 class Branch(
-    @Column(name = "address", nullable = false)
+    @Column(name = "address", nullable = false, unique = true)
     val address: String,
 
+    @Column(name = "name", nullable = false, unique = true)
+    val name: String,
+
     @ManyToOne
-    val user: User
+    val owner: User
 ) {
     @Id
     @GeneratedValue
