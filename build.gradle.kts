@@ -25,6 +25,8 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     // TEST
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    // VALIDATION
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     // WEB
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")

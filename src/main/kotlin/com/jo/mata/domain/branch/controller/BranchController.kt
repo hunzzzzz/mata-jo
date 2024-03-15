@@ -2,6 +2,7 @@ package com.jo.mata.domain.branch.controller
 
 import com.jo.mata.domain.branch.dto.AddBranchRequest
 import com.jo.mata.domain.branch.service.BranchService
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -15,6 +16,6 @@ class BranchController(
     private val branchService: BranchService
 ) {
     @PostMapping
-    fun addBranch(@RequestBody request: AddBranchRequest) =
+    fun addBranch(@RequestBody @Valid request: AddBranchRequest) =
         ResponseEntity.created(URI.create("/")).body(branchService.addBranch(request))
 }
