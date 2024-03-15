@@ -4,7 +4,6 @@ import com.jo.mata.domain.branch.repository.BranchRepository
 import com.jo.mata.domain.user.entity.User
 import com.jo.mata.domain.user.entity.UserRole
 import com.jo.mata.domain.user.repository.UserRepository
-import org.aspectj.lang.annotation.Before
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -48,7 +47,8 @@ class BranchControllerTest {
         mockMvc.perform(
             MockMvcRequestBuilders.post("/branches")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("""
+                .content(
+                    """
                     {
                         "address": "서울특별시 왕십리로 410",
                         "name": "상왕십리점",
@@ -61,5 +61,26 @@ class BranchControllerTest {
 
         assertEquals(branchRepository.existsByName("상왕십리점"), true)
         assertEquals(branchRepository.findByName("상왕십리점")?.owner!!.name, "홍길동")
+    }
+
+    @Test
+    @DisplayName("비정상적인 값을 대입하면 404 BAD REQUEST를 리턴한다.")
+    fun addBranchInFailure() {
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/branches")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "address": "",
+                        "name": "상왕십리점",
+                        "ownerId" : ${1}
+                    }
+                """.trimIndent()
+                )
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                .value("지점 주소는 필수 입력 사항입니다."))
+            .andDo(MockMvcResultHandlers.print())
     }
 }
