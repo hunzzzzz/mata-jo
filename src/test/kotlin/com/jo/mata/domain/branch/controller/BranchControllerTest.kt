@@ -44,7 +44,7 @@ class BranchControllerTest {
     }
 
     @Test
-    @DisplayName("정상적인 값을 대입하면 지점 등록이 완료된다.")
+    @DisplayName("지점 등록 시, 정상적인 값을 대입하면 지점 등록이 완료된다.")
     fun addBranch() {
         mockMvc.perform(
             MockMvcRequestBuilders.post("/branches")
@@ -66,7 +66,7 @@ class BranchControllerTest {
     }
 
     @Test
-    @DisplayName("비정상적인 값을 대입하면 404 BAD REQUEST를 리턴한다.")
+    @DisplayName("지점 등록 시, 비정상적인 값을 대입하면 404 BAD REQUEST를 리턴한다.")
     fun addBranchInFailure() {
         mockMvc.perform(
             MockMvcRequestBuilders.post("/branches")
@@ -83,6 +83,35 @@ class BranchControllerTest {
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
             .andExpect(MockMvcResultMatchers.jsonPath("$.message")
                 .value("지점 주소는 필수 입력 사항입니다."))
+            .andDo(MockMvcResultHandlers.print())
+    }
+
+    @Test
+    @DisplayName("지점 등록 시, 중복된 address/name 을 대입하면 404 BAD REQUEST를 리턴한다.")
+    fun addBranchInFailure2() {
+        branchRepository.save(
+            Branch(
+                address = "서울특별시 왕십리로 410",
+                name = "상왕십리점",
+                owner = userRepository.findByIdOrNull(1L) ?: throw Exception("") // TODO
+            )
+        )
+
+        mockMvc.perform(
+            MockMvcRequestBuilders.post("/branches")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(
+                    """
+                    {
+                        "address": "서울특별시 왕십리로 410",
+                        "name": "상왕십리역점",
+                        "ownerId" : ${1}
+                    }
+                """.trimIndent()
+                )
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
+            .andExpect(MockMvcResultMatchers.jsonPath("$.message")
+                .value("이미 존재하는 지점 주소입니다."))
             .andDo(MockMvcResultHandlers.print())
     }
 
