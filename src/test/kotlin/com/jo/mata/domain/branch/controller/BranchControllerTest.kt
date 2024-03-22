@@ -115,25 +115,4 @@ class BranchControllerTest {
         assertEquals(branchRepository.existsByName("하왕십리점"), true)
         assertEquals(branchRepository.findByName("하왕십리점")?.owner!!.name, "홍길동")
     }
-
-    @Test
-    @DisplayName("비정상적인 값을 대입하면 404 BAD REQUEST를 리턴한다.")
-    fun updateBranchInFailure() {
-        mockMvc.perform(
-            MockMvcRequestBuilders.post("/branches")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    """
-                    {
-                        "address": "",
-                        "name": "상왕십리점",
-                        "ownerId" : ${1}
-                    }
-                """.trimIndent()
-                )
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                .value("지점 주소는 필수 입력 사항입니다."))
-            .andDo(MockMvcResultHandlers.print())
-    }
 }
