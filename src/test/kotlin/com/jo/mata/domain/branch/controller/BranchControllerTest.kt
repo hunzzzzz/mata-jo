@@ -5,6 +5,7 @@ import com.jo.mata.domain.branch.repository.BranchRepository
 import com.jo.mata.domain.user.entity.User
 import com.jo.mata.domain.user.entity.UserRole
 import com.jo.mata.domain.user.repository.UserRepository
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -43,6 +44,11 @@ class BranchControllerTest {
         )
     }
 
+    @AfterEach
+    fun afterEach() {
+        branchRepository.deleteAll()
+    }
+
     @Test
     @DisplayName("지점 등록 시, 정상적인 값을 대입하면 지점 등록이 완료된다.")
     fun addBranch() {
@@ -52,7 +58,7 @@ class BranchControllerTest {
                 .content(
                     """
                     {
-                        "address": "서울특별시 왕십리로 410",
+                        "address": "서울특별시 성동구 왕십리로 410",
                         "name": "상왕십리점",
                         "ownerId" : ${1}
                     }
@@ -81,8 +87,10 @@ class BranchControllerTest {
                 """.trimIndent()
                 )
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                .value("지점 주소는 필수 입력 사항입니다."))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.message")
+                    .value("지점 주소는 필수 입력 사항입니다.")
+            )
             .andDo(MockMvcResultHandlers.print())
     }
 
@@ -91,8 +99,8 @@ class BranchControllerTest {
     fun addBranchInFailure2() {
         branchRepository.save(
             Branch(
-                address = "서울특별시 왕십리로 410",
-                name = "상왕십리점",
+                address = "서울특별시 송파구 올림픽로 435",
+                name = "잠실나루점",
                 owner = userRepository.findByIdOrNull(1L) ?: throw Exception("") // TODO
             )
         )
@@ -103,15 +111,17 @@ class BranchControllerTest {
                 .content(
                     """
                     {
-                        "address": "서울특별시 왕십리로 410",
+                        "address": "서울특별시 송파구 올림픽로 435",
                         "name": "상왕십리역점",
                         "ownerId" : ${1}
                     }
                 """.trimIndent()
                 )
         ).andExpect(MockMvcResultMatchers.status().isBadRequest)
-            .andExpect(MockMvcResultMatchers.jsonPath("$.message")
-                .value("이미 존재하는 지점 주소입니다."))
+            .andExpect(
+                MockMvcResultMatchers.jsonPath("$.message")
+                    .value("이미 존재하는 지점 주소입니다.")
+            )
             .andDo(MockMvcResultHandlers.print())
     }
 
@@ -120,8 +130,8 @@ class BranchControllerTest {
     fun updateBranch() {
         branchRepository.save(
             Branch(
-                address = "서울특별시 왕십리로 410",
-                name = "상왕십리점",
+                address = "서울특별시 송파구 올림픽로 435",
+                name = "잠실나루점",
                 owner = userRepository.findByIdOrNull(1L) ?: throw Exception("") // TODO
             )
         )
@@ -132,8 +142,8 @@ class BranchControllerTest {
                 .content(
                     """
                     {
-                        "address": "서울특별시 왕십리로 410",
-                        "name": "하왕십리점",
+                        "address": "서울특별시 송파구 올림픽로 435",
+                        "name": "잠실파크리오점",
                         "ownerId" : ${1}
                     }
                 """.trimIndent()
@@ -141,7 +151,7 @@ class BranchControllerTest {
         ).andExpect(MockMvcResultMatchers.status().isOk)
             .andDo(MockMvcResultHandlers.print())
 
-        assertEquals(branchRepository.existsByName("하왕십리점"), true)
-        assertEquals(branchRepository.findByName("하왕십리점")?.owner!!.name, "홍길동")
+        assertEquals(branchRepository.existsByName("잠실파크리오점"), true)
+        assertEquals(branchRepository.findByName("잠실파크리오점")?.owner!!.name, "홍길동")
     }
 }
